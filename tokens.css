@@ -1,0 +1,24 @@
+:root {
+  color-scheme: dark;
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-3xl: 96px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-3xl: 2.074rem; --text-display: 1.728rem; --text-section: 1.2rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-micro: 120ms;
+  --container: 1440px; --gutter: 64px; --gap-columns: 32px; --z-raised: 10; --z-sticky-nav: 300;
+  --color-paper: oklch(9% 0.008 75); --color-paper-2: oklch(12.5% 0.009 75); --color-paper-3: oklch(6.5% 0.007 75);
+  --color-ink: oklch(94% 0.010 80); --color-ink-2: oklch(84% 0.011 80); --color-muted: oklch(68% 0.012 80);
+  --color-rule: oklch(25% 0.010 78);
+  --color-accent: oklch(72% 0.17 45); --color-accent-ink: oklch(10% 0.02 45); --color-focus: oklch(78% 0.15 45);
+  --font-display: "Switzer", ui-sans-serif, system-ui, sans-serif; --font-body: var(--font-display);
+  --font-outlier: "Geist Mono", ui-monospace, monospace; --rule-hair: 1px;
+  --tracking-display: -0.04em; --display-weight: 500;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --color-paper: oklch(97% 0.008 80); --color-paper-2: oklch(94% 0.009 80); --color-paper-3: oklch(99% 0.005 80);
+    --color-ink: oklch(18% 0.010 75); --color-ink-2: oklch(32% 0.010 75); --color-muted: oklch(46% 0.012 75);
+    --color-rule: oklch(84% 0.010 78);
+    --color-accent: oklch(52% 0.17 45); --color-accent-ink: oklch(99% 0.008 45); --color-focus: oklch(50% 0.16 45);
+  }
+}

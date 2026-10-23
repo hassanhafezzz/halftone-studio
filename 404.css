@@ -1,0 +1,6 @@
+.brand { margin: 0; font-family: var(--font-display); font-weight: var(--display-weight); font-size: var(--text-display); letter-spacing: var(--tracking-display); line-height: 1.05; }
+.brand a { color: inherit; text-decoration: none; }
+.notfound { display: grid; justify-items: center; align-content: center; gap: var(--space-sm); min-height: 60vh; padding: var(--space-xl) var(--space-lg); text-align: center; }
+.notfound .lede { margin-block-start: 0; }
+.notfound .code { font-family: var(--font-outlier); font-size: var(--text-3xl); font-variant-numeric: tabular-nums; color: var(--color-accent); }
+.notfound .btn { margin-block-start: var(--space-sm); padding-inline: var(--space-lg); }

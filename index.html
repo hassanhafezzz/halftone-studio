@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>Halftone Studio: create halftone images from your photos</title>
+<meta name="description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG. Your photo never leaves your device.">
+<link rel="canonical" href="https://{{DOMAIN}}/">
+<meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#030201" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="dark light">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Halftone Studio">
+<meta property="og:title" content="Halftone Studio: create halftone images from your photos">
+<meta property="og:description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
+<meta property="og:url" content="https://{{DOMAIN}}/">
+<meta property="og:image" content="https://{{DOMAIN}}/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Halftone Studio on a dark background beside a grid of orange dots that grow from small to large.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Halftone Studio: create halftone images from your photos">
+<meta name="twitter:description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
+<meta name="twitter:image" content="https://{{DOMAIN}}/og-image.png">
+<meta name="twitter:image:alt" content="Halftone Studio on a dark background beside a grid of orange dots that grow from small to large.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://{{DOMAIN}}/#website",
+      "url": "https://{{DOMAIN}}/",
+      "name": "Halftone Studio",
+      "description": "Create halftone images from your photos in the browser.",
+      "inLanguage": "en"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://{{DOMAIN}}/#app",
+      "url": "https://{{DOMAIN}}/",
+      "name": "Halftone Studio",
+      "description": "Turn a photo into a halftone image in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any (runs in a web browser)",
+      "browserRequirements": "Requires JavaScript and HTML canvas support",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://{{DOMAIN}}/#website" }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="app.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the tool</a>
+<div class="container shell">
+  <header class="bar">
+    <div>
+      <h1>Halftone Studio</h1>
+      <p class="lede">Drop a photo onto the sheet. Every cell of the screen becomes one dot, sized by how dark that spot of the image is.</p>
+    </div>
+    <dl class="spec" id="spec" aria-label="Current screen">
+      <div><dt>Cell</dt><dd id="specCell">12 px</dd></div>
+      <div><dt>Angle</dt><dd id="specAngle">45°</dd></div>
+      <div><dt>Dots</dt><dd id="specDots">0</dd></div>
+    </dl>
+  </header>
+
+  <main class="main" id="main" tabindex="-1">
+    <section class="stage" aria-label="Proof">
+      <div class="well ticks drop" id="drop">
+        <canvas id="out" width="900" height="1100" role="img" aria-label="Halftone render preview">Your browser does not support canvas, so the halftone preview cannot be shown.</canvas>
+        <div class="empty" id="empty"><p>Drop a photo here, paste one, or choose a file.</p></div>
+      </div>
+      <div class="marks"><span class="tag" id="srcTag" data-state="empty">No image</span><span class="num" id="dims">900 × 1100 px</span></div>
+    </section>
+
+    <aside aria-label="Controls">
+      <div class="group">
+        <h2>Source</h2>
+        <input type="file" id="file" accept="image/*" hidden>
+        <button class="btn btn--primary" id="pick" type="button">Choose a photo…</button>
+        <p class="hint">Or drag one onto the sheet. Your photo stays in this browser.</p>
+      </div>
+
+      <div class="group">
+        <h2>Detail</h2>
+        <div class="chips" id="detailChips" role="group" aria-label="Detail presets"></div>
+        <div class="row"><span class="sublabel" id="lookLbl">Look</span><div class="looks" id="lookChips" role="group" aria-labelledby="lookLbl"></div></div>
+      </div>
+
+      <div class="group">
+        <h2>Colour</h2>
+        <p class="hint">Choose one source for the dot colours.</p>
+        <div class="modes" role="radiogroup" aria-label="Colour source">
+          <div class="mode mode--lead">
+            <input type="radio" name="colorsrc" id="cs-photo" value="photo">
+            <label for="cs-photo"><span class="mode-title">Photo colours</span><span class="mode-desc">Each dot takes its colour from the photo.</span></label>
+            <div class="mode-body" id="mb-photo" hidden>
+              <div class="colors"><label><input type="color" id="paperP" value="#f3f2ee"> Paper</label></div>
+            </div>
+          </div>
+          <div class="mode">
+            <input type="radio" name="colorsrc" id="cs-preset" value="preset">
+            <label for="cs-preset"><span class="mode-title">Preset palette</span><span class="mode-desc">A ready-made set of 3 or 4 colours.</span></label>
+            <div class="mode-body" id="mb-preset" hidden>
+              <label class="sublabel" for="palette">Palette</label>
+              <div class="select"><select id="palette"></select></div>
+              <div class="preview" id="palettePreview" role="img"></div>
+            </div>
+          </div>
+          <div class="mode">
+            <input type="radio" name="colorsrc" id="cs-custom" value="custom" checked>
+            <label for="cs-custom"><span class="mode-title">Custom</span><span class="mode-desc">Choose one ink and one paper.</span></label>
+            <div class="mode-body" id="mb-custom">
+              <div class="colors">
+                <label><input type="color" id="ink" value="#16171c"> Ink</label>
+                <label><input type="color" id="paperC" value="#f3f2ee"> Paper</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="invert"> Invert colours (light dots on dark)</label>
+        <p class="hint">Swaps paper and ink, and puts the big dots on the bright parts of the photo. With a preset, the darkest ink becomes the paper.</p>
+      </div>
+
+      <div class="group">
+        <h2>Screen</h2>
+        <div class="row"><label for="cell">Dot spacing <output id="cellO"></output></label><input type="range" id="cell" min="3" max="40" value="12"></div>
+        <div class="row"><label for="angle">Screen angle <output id="angleO"></output></label><input type="range" id="angle" min="0" max="90" value="45"></div>
+        <div class="row"><label for="gain">Dot gain <output id="gainO"></output></label><input type="range" id="gain" min="50" max="160" value="110"></div>
+        <div class="seg" role="radiogroup" aria-label="Dot shape">
+          <input type="radio" name="shape" id="sh-c" value="circle" checked><label for="sh-c">Round</label>
+          <input type="radio" name="shape" id="sh-s" value="square"><label for="sh-s">Square</label>
+          <input type="radio" name="shape" id="sh-d" value="diamond"><label for="sh-d">Diamond</label>
+          <input type="radio" name="shape" id="sh-l" value="line"><label for="sh-l">Line</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Tone</h2>
+        <div class="row"><label for="bright">Brightness <output id="brightO"></output></label><input type="range" id="bright" min="-60" max="60" value="0"></div>
+        <div class="row"><label for="contrast">Contrast <output id="contrastO"></output></label><input type="range" id="contrast" min="-50" max="100" value="20"></div>
+      </div>
+
+      <div class="group">
+        <h2>Save</h2>
+        <div class="btns">
+          <button class="btn" type="button" id="png" disabled>Download PNG</button>
+          <button class="btn" type="button" id="svg" disabled>Download SVG</button>
+          <button class="btn btn--wide" type="button" id="copy" disabled>Copy SVG</button>
+        </div>
+        <p id="toast" role="status"></p>
+        <div class="savebox" id="svgbox" hidden>
+          <p class="hint">Copy didn’t go through here. Select all in the box below and copy it.</p>
+          <textarea id="svgText" readonly aria-label="SVG source"></textarea>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+<noscript><p class="container noscript">Halftone Studio needs JavaScript to turn a photo into a halftone image.</p></noscript>
+
+</body>
+</html>
