@@ -236,6 +236,8 @@ function toSVG(){
 
 const toast = m => { $('toast').textContent = m; setTimeout(()=>{ if($('toast').textContent===m) $('toast').textContent=''; }, 3000); };
 
+const track = name => { try { window.goatcounter?.count({ path: 'event/' + name, title: name, event: true }); } catch(e){} };
+
 const baseName = () => (srcName.replace(/\.[^.]+$/, '') || 'halftone') + '-halftone';
 function saveBlob(blob, name){
   const a = document.createElement('a'), u = URL.createObjectURL(blob);
@@ -245,14 +247,17 @@ function saveBlob(blob, name){
 }
 $('png').addEventListener('click', () => {
   if(!srcData) return;
+  track('download-png');
   out.toBlob(b => b ? saveBlob(b, baseName() + '.png') : toast('Couldn’t create the PNG. Try again.'), 'image/png');
 });
 $('svg').addEventListener('click', () => {
   if(!srcData) return;
+  track('download-svg');
   saveBlob(new Blob([toSVG()], {type:'image/svg+xml'}), baseName() + '.svg');
 });
 $('copy').addEventListener('click', () => {
   if(!srcData) return;
+  track('copy-svg');
   const s = toSVG();
   const fallback = () => { $('svgText').value = s; $('svgbox').hidden = false; $('svgText').select(); };
   try { navigator.clipboard.writeText(s).then(()=>toast(`SVG copied, ${Math.round(s.length/1024)} KB`), fallback); } catch(e){ fallback(); }

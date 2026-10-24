@@ -2,7 +2,7 @@
 
 Create halftone and dither images from your photos in the browser. Drop a photo, pick a look, and save the result as PNG or SVG.
 
-Your photo is processed on your device and is never uploaded. 
+Your photo is processed on your device and is never uploaded. The site uses [GoatCounter](https://www.goatcounter.com/) for anonymous, cookie-free visit and download counts; no photo data is sent.
 
 ![Halftone Studio with the Electric dither look applied to a portrait](examples/app.png)
 
