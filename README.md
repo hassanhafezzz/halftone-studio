@@ -4,15 +4,15 @@ Create halftone and dither images from your photos in the browser. Drop a photo,
 
 Your photo is processed on your device and is never uploaded. The site uses [GoatCounter](https://www.goatcounter.com/) for anonymous, cookie-free visit and download counts; no photo data is sent.
 
-![Halftone Studio with the Electric dither look applied to a portrait](examples/app.png)
+![Halftone Studio with the Electric dither look applied to a portrait](docs/examples/app.png)
 
 ## Examples
 
 | Before | After |
 | --- | --- |
-| ![Original photo, example 1](examples/before-2.png) | ![Halftone result, example 1](examples/after-2.png) |
-| ![Original photo, example 2](examples/before-4.png) | ![Halftone result, example 2](examples/after-4.png) |
-| ![Original photo, example 3](examples/before-5.png) | ![Halftone result, example 3](examples/after-5.png) |
+| ![Original photo, example 1](docs/examples/1-before.jpg) | ![Halftone result, example 1](docs/examples/1-after.png) |
+| ![Original photo, example 2](docs/examples/2-before.jpg) | ![Halftone result, example 2](docs/examples/2-after.png) |
+| ![Original photo, example 3](docs/examples/3-before.jpg) | ![Halftone result, example 3](docs/examples/3-after.png) |
 
 ## Use it
 
