@@ -4,6 +4,8 @@ Create halftone and dither images from your photos in the browser. Drop a photo,
 
 Your photo is processed on your device and is never uploaded. 
 
+![Halftone Studio with the Electric dither look applied to a portrait](examples/app.png)
+
 ## Examples
 
 | Before | After |
