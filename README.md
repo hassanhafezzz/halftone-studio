@@ -1,4 +1,4 @@
-# Halftone Studio
+# [Halftone Studio](https://makehalftone.pages.dev/)
 
 Create halftone and dither images from your photos in the browser. Drop a photo, pick a look, and save the result as PNG or SVG.
 
