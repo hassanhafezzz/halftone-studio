@@ -1,7 +1,7 @@
 {
   "name": "Halftone Studio",
   "short_name": "Halftone",
-  "description": "Create halftone images from your photos in the browser.",
+  "description": "Create halftone and dither images from your photos in the browser.",
   "lang": "en",
   "start_url": "/",
   "scope": "/",

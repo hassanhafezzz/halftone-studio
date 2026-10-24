@@ -2,7 +2,7 @@
 const $ = id => document.getElementById(id);
 const out = $('out'), ctx = out.getContext('2d');
 const src = document.createElement('canvas'), sctx = src.getContext('2d', {willReadFrequently:true});
-let srcData = null, srcName = '', sw = 0, sh = 0, groups = [], dotCount = 0, lastBg = '';
+let srcData = null, srcName = '', sw = 0, sh = 0, groups = [], dotCount = 0, lastBg = '', lastDither = false;
 let palette = null, paletteInks = [], activeDetail = null;
 
 // Detail presets set the screen and tone controls; palettes list the paper first, then the inks
@@ -19,7 +19,7 @@ const LOOKS = [
   {name:'Colour dots',    cell:3,  angle:45, gain:120, bright:0, contrast:40, shape:'circle', mode:'photo',  invert:false, paper:'#f3f2ee'},
   {name:'Acid pixel', cell:3, angle:0,  gain:150, bright:0, contrast:50, shape:'square', mode:'preset', invert:false, palette:'Acid'},
   {name:'Ultraviolet pixel', cell:3, angle:0,  gain:150, bright:0, contrast:50, shape:'square', mode:'preset', invert:false, palette:'Ultraviolet'},
-  {name:'Electric pixel', cell:3, angle:0,  gain:150, bright:0, contrast:50, shape:'square', mode:'preset', invert:false, palette:'Electric'},
+  {name:'Electric dither', cell:3, angle:0, gain:100, bright:0, contrast:65, shape:'dither', mode:'preset', invert:false, palette:'Electric'},
   {name:'Solar pixel', cell:3, angle:0,  gain:150, bright:0, contrast:50, shape:'square', mode:'preset', invert:false, palette:'Solar'}
 ];
 const ALL = DETAIL.concat(LOOKS);
@@ -92,6 +92,7 @@ const mode = () => document.querySelector('input[name=colorsrc]:checked').value;
 // Background and base dot colour for the chosen colour source; null dot means every dot carries its own colour
 function ground(){
   const m = mode(), inv = $('invert').checked;
+  if(shape() === 'dither' && m !== 'photo') return {bg: ditherRamp()[0], dot: null};
   if(m === 'preset') return {bg: pcols()[0], dot: null};
   if(m === 'photo') return {bg: $('paperP').value, dot: null};
   return {bg: inv ? $('ink').value : $('paperC').value, dot: inv ? $('paperC').value : $('ink').value};
@@ -105,7 +106,7 @@ function readouts(){
   });
 }
 
-const r2 = n => Math.round(n*100)/100;
+const r2 = n => Math.round(n*100)/100, r3 = n => Math.round(n*1000)/1000;
 const quant = v => (v & 0xf0) | (v >> 4); // 16 levels per channel keeps photo colours to a few thousand paths
 // One closed subpath per dot, in source pixels: arcs for circles, rotated corners for the other shapes
 function dotPath(shp, x, y, s, cs, sn, cell){
@@ -115,10 +116,55 @@ function dotPath(shp, x, y, s, cs, sn, cell){
   const p = (u,v) => `${r2(x+u*cs-v*sn)} ${r2(y+u*sn+v*cs)}`;
   return `M${p(-w,-h)}L${p(w,-h)}L${p(w,h)}L${p(-w,h)}Z`;
 }
+// Dither reads the palette as a tone ramp, darkest to lightest: the inks in order, then the paper
+function ditherRamp(){
+  if(mode() === 'preset') return palette.slice(1).concat(palette[0]);
+  return [$('ink').value, $('paperC').value];
+}
+const BAYER = (() => { let m = [0]; for(let n = 1; n < 8; n *= 2){ const s = n*n; m = Array.from({length: 4*s}, (_, k) => { const x = k % (2*n), y = (k / (2*n)) | 0; return 4*m[(y % n)*n + (x % n)] + [[0,2],[3,1]][(y/n)|0][(x/n)|0]; }); } return m; })();
+// One pixel per cell on a straight grid. Each cell takes the ramp colour its tone falls on, and an ordered
+// pattern decides between the two nearest colours. Runs of one colour share a rectangle.
+function dither(cellSrc, b, cf, inv, m){
+  const ramp = m === 'photo' ? null : ditherRamp(), n = ramp ? ramp.length : 2;
+  const cols = Math.ceil(sw/cellSrc), rows = Math.ceil(sh/cellSrc), map = new Map();
+  let count = 0;
+  for(let j = 0; j < rows; j++){
+    let key = null, start = 0;
+    const flush = end => {
+      if(!key) return;
+      let grp = map.get(key); if(!grp){ grp = {c:key, d:''}; map.set(key, grp); }
+      grp.d += `M${r3(start*cellSrc)} ${r3(j*cellSrc)}h${r3((end-start)*cellSrc)}v${r3(cellSrc)}h${r3(-(end-start)*cellSrc)}Z`;
+      count += end - start;
+    };
+    for(let i = 0; i <= cols; i++){
+      let k = null;
+      if(i < cols){
+        const p = ((Math.min(sh-1, ((j+0.5)*cellSrc)|0))*sw + Math.min(sw-1, ((i+0.5)*cellSrc)|0))*4;
+        const r = srcData[p], g = srcData[p+1], bl = srcData[p+2];
+        let L = (0.2126*r + 0.7152*g + 0.0722*bl)/255;
+        L = (cf*(L*255-128)+128)/255 + b; L = Math.min(1, Math.max(0, L));
+        if(inv) L = 1 - L;
+        const thr = (BAYER[(j & 7)*8 + (i & 7)] + 0.5)/64;
+        if(ramp){
+          const t = L*(n-1), idx = Math.min(n-2, Math.floor(t));
+          k = t - idx > thr ? ramp[idx+1] : ramp[idx];
+          if(k === ramp[0]) k = null;
+        } else if(1 - L > thr) k = `rgb(${quant(r)},${quant(g)},${quant(bl)})`;
+      }
+      if(k !== key){ flush(i); key = k; start = i; }
+    }
+  }
+  return {groups: [...map.values()], count};
+}
 function sizeCanvas(w, h){ if(out.width !== w) out.width = w; if(out.height !== h) out.height = h; }
 
+// Dither is a straight pixel grid, so the screen angle and dot gain have nothing to act on
+function syncDither(){
+  const off = shape() === 'dither';
+  ['angle','gain'].forEach(id => { const el = $(id); el.disabled = off; el.parentElement.toggleAttribute('data-disabled', off); });
+}
 function render(){
-  readouts();
+  readouts(); syncDither();
   const inv = $('invert').checked, g0 = ground();
   lastBg = g0.bg;
   if(!srcData){
@@ -135,12 +181,26 @@ function render(){
   const b = val('bright')/100, k = val('contrast'), cf = (259*(k+255))/(255*(259-k));
   const m = mode();
   if(m === 'preset') paletteInks = pcols().slice(1).map(hex => ({hex, rgb: hexRgb(hex)}));
-  const scale = Math.min(MAXOUT/Math.max(sw,sh), 2.5);
+  let scale = Math.min(MAXOUT/Math.max(sw,sh), 2.5);
+  lastDither = shape() === 'dither';
+  if(lastDither) scale = Math.max(1, Math.round(cellSrc*scale))/cellSrc; // whole output pixels per cell, so no seams between cells
   sizeCanvas(Math.round(sw*scale), Math.round(sh*scale));
   ctx.fillStyle = g0.bg; ctx.fillRect(0,0,out.width,out.height);
+  const shp = shape();
+  if(shp === 'dither'){
+    const d = dither(cellSrc, b, cf, inv, m);
+    groups = d.groups; dotCount = d.count;
+    ctx.save(); ctx.scale(scale,scale);
+    for(const g of groups){ ctx.fillStyle = g.c; ctx.fill(new Path2D(g.d)); }
+    ctx.restore();
+    $('specCell').textContent = Math.round(cellSrc*scale) + ' px'; $('specAngle').textContent = '0°'; $('specDots').textContent = dotCount.toLocaleString();
+    $('dims').textContent = `${out.width} × ${out.height} px`;
+    $('svgbox').hidden = true;
+    return;
+  }
   const cos = Math.cos(ang), sin = Math.sin(ang), cx = sw/2, cy = sh/2;
   const R = Math.hypot(sw,sh)/2 + cellSrc;
-  const n = Math.ceil(R/cellSrc), shp = shape();
+  const n = Math.ceil(R/cellSrc);
   const sa = ang + (shp === 'diamond' ? Math.PI/4 : 0), scs = Math.cos(sa), ssn = Math.sin(sa);
   const byColour = new Map(); dotCount = 0;
   for(let i=-n;i<=n;i++) for(let j=-n;j<=n;j++){
@@ -171,7 +231,7 @@ function render(){
 // The SVG reuses the path data the preview was drawn from, one path per colour
 function toSVG(){
   const body = groups.map(g => `<path fill="${g.c}" d="${g.d}"/>`).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sw} ${sh}"><rect width="100%" height="100%" fill="${lastBg}"/>${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sw} ${sh}"${lastDither ? ' shape-rendering="crispEdges"' : ''}><rect width="100%" height="100%" fill="${lastBg}"/>${body}</svg>`;
 }
 
 const toast = m => { $('toast').textContent = m; setTimeout(()=>{ if($('toast').textContent===m) $('toast').textContent=''; }, 3000); };
@@ -216,7 +276,18 @@ function applyDetail(i){
   activeDetail = i; markPressed(); queue();
 }
 function setPalette(){
-  palette = PALETTES[+$('palette').value].colors;
+  palette = PALETTES[+$('palette').value].colors.slice();
+  showPalette();
+}
+// Same colours in a new order: the first is the paper, so the ground and the ink for each tone change
+function shufflePalette(){
+  const prev = palette.join();
+  do {
+    for(let i = palette.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [palette[i], palette[j]] = [palette[j], palette[i]]; }
+  } while(palette.join() === prev);
+  showPalette(); queue();
+}
+function showPalette(){
   const pv = $('palettePreview'); pv.textContent = '';
   palette.forEach(hex => { const s = document.createElement('span'); s.style.backgroundColor = hex; pv.appendChild(s); });
   pv.setAttribute('aria-label', `${palette.length} colours: ${palette.join(', ')}`);
@@ -249,6 +320,7 @@ document.querySelector('aside').addEventListener('input', e => {
 });
 document.querySelectorAll('input[name=colorsrc]').forEach(el => el.addEventListener('change', syncMode));
 $('palette').addEventListener('input', setPalette);
+$('shuffle').addEventListener('click', shufflePalette);
 buildPresets();
 
 function readFile(f){

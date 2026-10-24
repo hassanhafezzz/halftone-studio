@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://{{DOMAIN}}/sitemap.xml
+Sitemap: https://makehalftone.pages.dev/sitemap.xml

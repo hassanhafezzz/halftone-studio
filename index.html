@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <title>Halftone Studio: create halftone images from your photos</title>
-<meta name="description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG. Your photo never leaves your device.">
-<link rel="canonical" href="https://{{DOMAIN}}/">
+<meta name="description" content="Create halftone and dither images from your photos. Choose the dot screen, tone and ink, then save as PNG or SVG. Your photo never leaves your device.">
+<link rel="canonical" href="https://makehalftone.pages.dev/">
 <meta name="theme-color" content="#f8f5ef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#030201" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="dark light">
@@ -20,17 +20,17 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Halftone Studio">
 <meta property="og:title" content="Halftone Studio: create halftone images from your photos">
-<meta property="og:description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
-<meta property="og:url" content="https://{{DOMAIN}}/">
-<meta property="og:image" content="https://{{DOMAIN}}/assets/img/og-image.png">
+<meta property="og:description" content="Create halftone and dither images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
+<meta property="og:url" content="https://makehalftone.pages.dev/">
+<meta property="og:image" content="https://makehalftone.pages.dev/assets/img/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Halftone Studio on a dark background beside a grid of orange dots that grow from small to large.">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Halftone Studio: create halftone images from your photos">
-<meta name="twitter:description" content="Create halftone images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
-<meta name="twitter:image" content="https://{{DOMAIN}}/assets/img/og-image.png">
+<meta name="twitter:description" content="Create halftone and dither images from your photos in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.">
+<meta name="twitter:image" content="https://makehalftone.pages.dev/assets/img/og-image.png">
 <meta name="twitter:image:alt" content="Halftone Studio on a dark background beside a grid of orange dots that grow from small to large.">
 
 <script type="application/ld+json">
@@ -39,23 +39,23 @@
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://{{DOMAIN}}/#website",
-      "url": "https://{{DOMAIN}}/",
+      "@id": "https://makehalftone.pages.dev/#website",
+      "url": "https://makehalftone.pages.dev/",
       "name": "Halftone Studio",
-      "description": "Create halftone images from your photos in the browser.",
+      "description": "Create halftone and dither images from your photos in the browser.",
       "inLanguage": "en"
     },
     {
       "@type": "WebApplication",
-      "@id": "https://{{DOMAIN}}/#app",
-      "url": "https://{{DOMAIN}}/",
+      "@id": "https://makehalftone.pages.dev/#app",
+      "url": "https://makehalftone.pages.dev/",
       "name": "Halftone Studio",
-      "description": "Turn a photo into a halftone image in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.",
+      "description": "Turn a photo into a halftone or dither image in the browser. Choose the dot screen, tone and ink, then save as PNG or SVG.",
       "applicationCategory": "MultimediaApplication",
       "operatingSystem": "Any (runs in a web browser)",
       "browserRequirements": "Requires JavaScript and HTML canvas support",
       "inLanguage": "en",
-      "isPartOf": { "@id": "https://{{DOMAIN}}/#website" }
+      "isPartOf": { "@id": "https://makehalftone.pages.dev/#website" }
     }
   ]
 }
@@ -128,7 +128,12 @@
             <input type="radio" name="colorsrc" id="cs-preset" value="preset">
             <label for="cs-preset"><span class="mode-title">Preset palette</span><span class="mode-desc">A ready-made set of 3 or 4 colours.</span></label>
             <div class="mode-body" id="mb-preset" hidden>
-              <label class="sublabel" for="palette">Palette</label>
+              <div class="mode-row">
+                <label class="sublabel" for="palette">Palette</label>
+                <button class="btn btn--icon" id="shuffle" type="button" aria-label="Shuffle colour order" title="Shuffle colour order">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h3.5c4 0 6 10 11 10H21M3 17h3.5c1.7 0 3-.9 4-2.2M13.5 9.2C14.6 7.9 15.9 7 17.5 7H21M18.5 4.5 21 7l-2.5 2.5M18.5 14.5 21 17l-2.5 2.5"/></svg>
+                </button>
+              </div>
               <div class="select"><select id="palette"></select></div>
               <div class="preview" id="palettePreview" role="img"></div>
             </div>
@@ -158,6 +163,7 @@
           <input type="radio" name="shape" id="sh-s" value="square"><label for="sh-s">Square</label>
           <input type="radio" name="shape" id="sh-d" value="diamond"><label for="sh-d">Diamond</label>
           <input type="radio" name="shape" id="sh-l" value="line"><label for="sh-l">Line</label>
+          <input type="radio" name="shape" id="sh-p" value="dither"><label for="sh-p">Dither</label>
         </div>
       </div>
 

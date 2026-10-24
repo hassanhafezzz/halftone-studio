@@ -1,8 +1,16 @@
 # Halftone Studio
 
-Create halftone images from your photos in the browser. Drop a photo, pick a look, and save the result as PNG or SVG.
+Create halftone and dither images from your photos in the browser. Drop a photo, pick a look, and save the result as PNG or SVG.
 
 Your photo is processed on your device and is never uploaded. 
+
+## Examples
+
+| Before | After |
+| --- | --- |
+| ![Original photo, example 1](examples/before-2.png) | ![Halftone result, example 1](examples/after-2.png) |
+| ![Original photo, example 2](examples/before-4.png) | ![Halftone result, example 2](examples/after-4.png) |
+| ![Original photo, example 3](examples/before-5.png) | ![Halftone result, example 3](examples/after-5.png) |
 
 ## Use it
 
@@ -17,7 +25,7 @@ The page follows your system's light or dark setting. Use the sun/moon button in
 
 ## Controls
 
-- **Detail:** High, Medium and Low presets, plus looks such as Night portrait, Newsprint and Electric pixel.
+- **Detail:** High, Medium and Low presets, plus looks such as Night portrait, Newsprint and Electric dither.
 - **Colour:** photo colours, one of 29 preset palettes, or a custom ink and paper. Invert swaps them.
-- **Screen:** dot spacing, screen angle, dot gain and dot shape (round, square, diamond, line).
+- **Screen:** dot spacing, screen angle, dot gain and dot shape (round, square, diamond, line, dither).
 - **Tone:** brightness and contrast.

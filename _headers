@@ -8,9 +8,6 @@
 /site.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
 
-/.well-known/security.txt
-  Content-Type: text/plain; charset=utf-8
-
 /*.png
   Cache-Control: public, max-age=86400
 /*.ico
