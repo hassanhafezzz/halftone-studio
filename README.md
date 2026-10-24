@@ -2,7 +2,7 @@
 
 Create halftone images from your photos in the browser. Drop a photo, pick a look, and save the result as PNG or SVG.
 
-Your photo is processed on your device and is never uploaded. The page does load its fonts (Inter and Geist Mono) from Google Fonts, so Google sees your browser and IP address when the page opens.
+Your photo is processed on your device and is never uploaded. 
 
 ## Use it
 

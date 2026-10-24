@@ -15,5 +15,5 @@
   Cache-Control: public, max-age=86400
 /*.ico
   Cache-Control: public, max-age=86400
-/icon.svg
+/assets/icons/icon.svg
   Cache-Control: public, max-age=86400

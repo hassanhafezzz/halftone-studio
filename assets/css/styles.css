@@ -5,6 +5,8 @@
 .shell { padding-block: var(--space-lg) var(--space-xl); display: grid; gap: var(--space-lg); }
 .bar { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-md); padding-block-end: var(--space-md); border-block-end: var(--rule-hair) solid var(--color-rule); }
 .bar h1 { max-width: none; }
+.logo, .brand a { display: inline-flex; align-items: center; gap: var(--space-sm); }
+.mark { width: 1em; height: 1em; flex: none; color: var(--color-accent); }
 .btn.btn--theme { order: 2; display: inline-grid; place-items: center; width: 40px; padding: 0; }
 .btn--theme svg { grid-area: 1 / 1; }
 .btn--theme[data-next="light"] .i-moon, .btn--theme[data-next="dark"] .i-sun { display: none; }
